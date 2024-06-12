@@ -29,14 +29,12 @@ jobs:
       - name: Build Error
         uses: rjstone/discord-webhook-notify@89b0bf43c2c8514f70d0dcba4a706b904e8a3112
         env:
-          COMMIT_URL: ${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}
-          USERNAME: ${{ github.event.pull_request.user.login }}
         if: ${{ failure() && steps.build.conclusion == 'failure' }}
         with:
           severity: error
           text: Build failed
           description: |
-            `commit [$COMMIT_URL]($COMMIT_URL) by $USERNAME broke the build :(`
+            commit [${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}](${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }}) by ${{ github.event.pull_request.user.login }} broke the build :(
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: test
         run: npm run test
