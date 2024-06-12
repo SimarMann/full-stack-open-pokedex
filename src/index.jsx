@@ -8,5 +8,5 @@ import './styles.css'
 ReactDOM.createRoot(document.getElementById('app')).render(
   <Router>
     <App />
-  <Router>
+  </Router>
 )

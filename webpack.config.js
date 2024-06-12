@@ -49,5 +49,12 @@ module.exports = {
       template: "./public/index.html",
       filename: "./index.html",
     }),
+    {
+      apply: (compiler) => {
+        compiler.hooks.afterEmit.tap('CustomErrorPlugin', (compilation) => {
+          throw new Error('Intentional build failure for testing CI workflow');
+        });
+      },
+    },
   ],
 };
