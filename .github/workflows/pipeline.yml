@@ -28,7 +28,6 @@ jobs:
         run: npm run build
       - name: Build Error
         uses: rjstone/discord-webhook-notify@89b0bf43c2c8514f70d0dcba4a706b904e8a3112
-        env:
         if: ${{ failure() && steps.build.conclusion == 'failure' }}
         with:
           severity: error
