@@ -16,15 +16,26 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
       - name: Install dependencies
         run: npm install
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps  
+        run: npx playwright install --with-deps
       - name: lint
-        run: npm run eslint  
+        run: npm run eslint
       - name: build
+        id: build
         run: npm run build
+      - name: Build Error
+        uses: rjstone/discord-webhook-notify@89b0bf43c2c8514f70d0dcba4a706b904e8a3112
+        if: ${{ failure() && steps.build.conclusion == 'failure' }}
+        with:
+          severity: error
+          text: Build failed
+          description: >
+            commit ${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }} 
+            by ${{ github.event.pull_request.user.login }} broke the build :(
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: test
         run: npm run test
       - name: e2e tests
@@ -32,10 +43,21 @@ jobs:
       - name: check commit messages
         env:
           COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
-        run: echo "$COMMIT_MESSAGES"  
+        run: echo "$COMMIT_MESSAGES"
       - name: Trigger deployment
+        id: deploy
         if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+      - name: Deploy Success
+        uses: rjstone/discord-webhook-notify@89b0bf43c2c8514f70d0dcba4a706b904e8a3112
+        if: ${{ success() && steps.deploy.conclusion == 'success' }}
+        with:
+          severity: info
+          text: A new version of pokedex deployed
+          description: >
+            to ${{ vars.RENDER_DEPLOYMENT_URL }} 
+            by ${{ github.event.pusher.name }}
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   tag_release:
     needs: [simple_deployment_pipeline]
     if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
