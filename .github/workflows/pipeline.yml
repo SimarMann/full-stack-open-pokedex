@@ -24,7 +24,17 @@ jobs:
       - name: lint
         run: npm run eslint  
       - name: build
+        id: build
         run: npm run build
+      - name: Build Error
+        uses: rjstone/discord-webhook-notify@89b0bf43c2c8514f70d0dcba4a706b904e8a3112
+        if: ${{ failure() && steps.build.conclusion == 'failure' }}
+        with:
+          severity: error
+          text: Build failed
+          description: |
+            `commit ${{ github.event.head_commit.url }} by ${{ github.event.head_commit.committer.name }} broke the build :(`
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: test
         run: npm run test
       - name: e2e tests
