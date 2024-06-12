@@ -33,7 +33,7 @@ jobs:
           severity: error
           text: Build failed
           description: |
-            `commit ${{ github.event.head_commit.url }} by ${{ github.event.head_commit.committer.name }} broke the build :(`
+            `commit ${{ github.event.pull_request.head.repo.url }}/commit/${{ github.event.pull_request.head.sha }} by ${{ github.event.pull_request.user.name }} broke the build :(`
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: test
         run: npm run test
@@ -54,7 +54,7 @@ jobs:
           severity: info
           text: A new version of pokedex deployed
           description: |
-            `to ${{ env.RENDER_DEPLOYMENT_URL }} by ${{ github.event.pusher.name }}`
+            `to ${{ vars.RENDER_DEPLOYMENT_URL }} by ${{ github.event.pusher.name }}`
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   tag_release:
     needs: [simple_deployment_pipeline]
