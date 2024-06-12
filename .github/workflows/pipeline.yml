@@ -33,7 +33,7 @@ jobs:
           severity: error
           text: Build failed
           description: |
-            `commit ${{ github.event.pull_request.head.repo.url | replace('api.github.com/repos', 'github.com') }}/commit/${{ github.event.pull_request.head.sha }} by ${{ github.event.pull_request.user.login }} broke the build :(`
+            `commit ${{ replace(github.event.pull_request.head.repo.url, 'api.github.com/repos', 'github.com') }}/commit/${{ github.event.pull_request.head.sha }} by ${{ github.event.pull_request.user.login }} broke the build :(`
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: test
         run: npm run test
