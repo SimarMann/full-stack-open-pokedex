@@ -1,0 +1,19 @@
+---
+name: Health check
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  health_check_job:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check the deployed service URL
+        uses: jtalk/url-health-check-action@b716ccb6645355dd9fcce8002ce460e5474f7f00
+        with:
+          url: ${{ vars.RENDER_DEPLOYMENT_URL }}
+          max-attempts: 2
+          retry-delay: 20s     
+...
