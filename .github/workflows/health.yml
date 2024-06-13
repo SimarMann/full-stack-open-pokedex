@@ -2,9 +2,8 @@
 name: Health check
 
 on:
-  push:
-    branches:
-      - dev
+  schedule:
+    - cron: '*/30 * * * *'
 
 jobs:
   health_check_job:
